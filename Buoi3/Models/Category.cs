@@ -1,12 +1,16 @@
-﻿namespace Buoi3.Models
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
+
+namespace Buoi3.Models
 {
     public class Category
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Action { get; set; }
+        [Key]
+        public int CategoryId { get; set; }
+        [Required]
+        public string CategoryName { get; set; }
         //Navigation property to Products
-        public List<Product>? Products { get; set; } = new List<Product>();
+        public ICollection<Product>? Products { get; set; }
 
     }
 }

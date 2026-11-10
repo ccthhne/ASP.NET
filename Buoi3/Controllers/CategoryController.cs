@@ -5,13 +5,19 @@ namespace Buoi3.Controllers
 {
     public class CategoryController : Controller
     {
+        private readonly ILogger<CategoryController> _logger;
+        public CategoryController(ILogger<CategoryController> logger)
+        {
+            _logger = logger;
+        }
         //Gia lap database
         public static List<Category> categories = new List<Category>()
             {
-                new Category(){Id=1, Name="Laptop"},
-                new Category(){Id=2, Name="Phone"},
-                new Category(){Id=3, Name="Tablet"},
+                new Category(){CategoryId=1, CategoryName="Electronics"},
+                new Category(){CategoryId=2, CategoryName="Books"},
+                new Category(){CategoryId=3, CategoryName="Tablet"},
             };
+
         // GET: CategoryController
         [HttpGet]
         public ActionResult Index()
@@ -23,7 +29,8 @@ namespace Buoi3.Controllers
         [HttpGet]
         public ActionResult Details(int id)
         {
-            var category = categories.FirstOrDefault(c => c.Id == id);
+            _logger.LogInformation("Details action called with ID: {Id}", id);
+            var category = categories.FirstOrDefault(c => c.CategoryId == id);
             if (category == null)
             {
                 return NotFound();
@@ -42,22 +49,19 @@ namespace Buoi3.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Category category)
         {
-            try
+            if (ModelState.IsValid)
             {
-                category.Id = categories.Count + 1;
+                category.CategoryId = categories.Any() ? categories.Max(c => c.CategoryId) + 1 : 1;
                 categories.Add(category);
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(category);
         }
 
         // GET: CategoryController/Edit/5
         public ActionResult Edit(int id)
         {
-            var EditCategory = categories.FirstOrDefault(c => c.Id == id);
+            var EditCategory = categories.FirstOrDefault(c => c.CategoryId == id);
             if (EditCategory == null)
             {
                 return NotFound();
@@ -68,23 +72,29 @@ namespace Buoi3.Controllers
         // POST: CategoryController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Category category)
-        {   
-              var existingCategory = categories.FirstOrDefault(c => c.Id == category.Id);
-              if (existingCategory == null)
-              {
-                  return NotFound();
-              }
-              existingCategory.Name = category.Name;
+        public ActionResult Edit(int id, Category category)
+        {
+            var existingCategory = categories.FirstOrDefault(c => c.CategoryId == id);
+            if (existingCategory == null)
+            {
+                return NotFound();
+            }
 
-              return RedirectToAction(nameof(Index));
-     
+            if (!ModelState.IsValid)
+            {
+                category.CategoryId = id;
+                return View(category);
+            }
+
+            existingCategory.CategoryName = category.CategoryName;
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: CategoryController/Delete/5
         public ActionResult Delete(int id)
         {
-            var category = categories.FirstOrDefault(c => c.Id == id);
+            var category = categories.FirstOrDefault(c => c.CategoryId == id);
             if (category == null)
             {
                 return NotFound();
@@ -97,8 +107,8 @@ namespace Buoi3.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var category = categories.FirstOrDefault(c => c.Id == id);
-            if(category == null)
+            var category = categories.FirstOrDefault(c => c.CategoryId == id);
+            if (category == null)
             {
                 return NotFound();
             }

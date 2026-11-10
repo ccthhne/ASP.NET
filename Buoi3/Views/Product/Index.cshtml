@@ -1,0 +1,78 @@
+@model IEnumerable<Buoi3.Models.ProductViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<form class="input-group w-50 float-right" asp-action="Index" method="get">
+    <input type="text" class="form-control" placeholder="Search for" name="term" value="@ViewData["Term"]" />
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-orderBy="ProductId" asp-route-dsc="@ViewData["ProductId"]" asp-route-page="@ViewData["Page"]" asp-route-term="@ViewData["Term"]">@Html.DisplayNameFor(model => model.ProductId)</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-orderBy="ProductName" asp-route-dsc="@ViewData["ProductName"]" asp-route-page="@ViewData["Page"]" asp-route-term="@ViewData["Term"]">@Html.DisplayNameFor(model => model.ProductName)</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-orderBy="ProductPrice" asp-route-dsc="@ViewData["ProductPrice"]" asp-route-page="@ViewData["Page"]" asp-route-term="@ViewData["Term"]">@Html.DisplayNameFor(model => model.ProductPrice)</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-orderBy="CategoryName" asp-route-dsc="@ViewData["CategoryName"]" asp-route-page="@ViewData["Page"]" asp-route-term="@ViewData["Term"]">@Html.DisplayNameFor(model => model.CategoryName)</a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="2">
+                @{
+                    int pages = (int)ViewData["Pages"]!; int p = (int)ViewData["Page"]!;
+                }
+                <form asp-action="Index" method="get">
+                    <input type="hidden" name="orderBy" value="@ViewData["OrderBy"]" />
+                    <input type="hidden" name="dsc" value="@ViewData["Dsc"]" />
+                    <input type="hidden" name="term" value="@ViewData["Term"]" />
+                    <input type="submit" value="Go to" /> page <input type="number" max="@pages" min="1" name="page" value="@p" /> of @pages
+                </form>
+            </td>
+            <td colspan="3"><strong>Tổng số: @ViewData["Total"]</strong></td>
+        </tr>
+    </tfoot>
+</table>
